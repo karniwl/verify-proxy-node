@@ -68,6 +68,7 @@ services:
     image: govukverify/stub-idp
     ports:
       - "6200:80"
+      -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
     environment:
       PORT: 80
       CONFIG_FILE: ./stub-idp.yml
