@@ -22,6 +22,7 @@ import uk.gov.ida.notification.healthcheck.ProxyNodeHealthCheck;
 import uk.gov.ida.notification.pki.KeyPairConfiguration;
 import uk.gov.ida.notification.saml.ResponseAssertionDecrypter;
 import uk.gov.ida.notification.saml.SamlObjectSigner;
+import uk.gov.ida.notification.saml.converters.AuthnRequestParameterProvider;
 import uk.gov.ida.notification.saml.converters.ResponseParameterProvider;
 import uk.gov.ida.notification.saml.metadata.Metadata;
 import uk.gov.ida.notification.stubconnector.resources.MetadataResource;
@@ -111,8 +112,8 @@ public class StubConnectorApplication extends Application<uk.gov.ida.notificatio
     }
 
     private void registerProviders(Environment environment) {
+        environment.jersey().register(AuthnRequestParameterProvider.class);
         environment.jersey().register(ResponseParameterProvider.class);
-
         environment.servlets().setSessionHandler(new SessionHandler());
     }
 

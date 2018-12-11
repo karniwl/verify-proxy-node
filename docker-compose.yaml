@@ -9,7 +9,9 @@ services:
     ports:
       - "6100:80"
       - "6601:6601"
+      - "5005:5005"
     environment:
+      JAVA_OPTS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
       PORT: 80
       PROXY_NODE_ENTITY_ID: https://dev-hub.local
       PROXY_NODE_AUTHN_REQUEST_ENDPOINT: http://localhost:6100/SAML2/SSO/POST
@@ -58,7 +60,9 @@ services:
     ports:
       - "5000:80"
       - "6667:6667"
+      - "5055:5055"
     environment:
+      JAVA_OPTS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5055
       PORT: 80
       CONNECTOR_NODE_BASE_URL: http://localhost:5000
       PROXY_NODE_METADATA_FOR_CONNECTOR_NODE_URL: http://proxy-node-metadata/metadata_for_connector_node.xml
@@ -107,3 +111,4 @@ services:
     image: redis:latest
     expose:
       - "6379"
+

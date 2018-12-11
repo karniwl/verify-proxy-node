@@ -1,7 +1,10 @@
 package uk.gov.ida.notification.resources;
 
 import io.dropwizard.client.HttpClientBuilder;
+import io.dropwizard.client.HttpClientConfiguration;
+import io.dropwizard.jersey.sessions.Session;
 import io.dropwizard.setup.Environment;
+import io.dropwizard.util.Duration;
 import io.dropwizard.views.View;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ResponseHandler;
@@ -18,17 +21,19 @@ import uk.gov.ida.notification.exceptions.hubresponse.HubResponseException;
 import uk.gov.ida.notification.exceptions.hubresponse.InvalidHubResponseException;
 import uk.gov.ida.notification.exceptions.hubresponse.TranslatorResponseException;
 import uk.gov.ida.notification.exceptions.saml.SamlParsingException;
+import uk.gov.ida.notification.saml.HubResponseContainer;
 import uk.gov.ida.notification.saml.SamlFormMessageType;
 import uk.gov.ida.notification.saml.SamlObjectMarshaller;
 import uk.gov.ida.notification.saml.SamlParser;
-import uk.gov.ida.notification.saml.HubResponseContainer;
 import uk.gov.ida.notification.saml.validation.HubResponseValidator;
-import uk.gov.ida.notification.saml.validation.components.RequestIdWatcher;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
@@ -46,21 +51,21 @@ public class HubResponseResource {
     private HubResponseValidator hubResponseValidator;
     private Environment environment;
     private String translatorUrl;
-    private final RequestIdWatcher requestIdWatcher;
+
+    @Context
+    HttpServletRequest request;
 
     public HubResponseResource(
             SamlFormViewBuilder samlFormViewBuilder,
             String connectorNodeUrl,
             HubResponseValidator hubResponseValidator,
             Environment environment,
-            String translatorUrl,
-            RequestIdWatcher requestIdWatcher) {
+            String translatorUrl) {
         this.samlFormViewBuilder = samlFormViewBuilder;
         this.connectorNodeUrl = connectorNodeUrl;
         this.hubResponseValidator = hubResponseValidator;
         this.environment = environment;
         this.translatorUrl = translatorUrl;
-        this.requestIdWatcher = requestIdWatcher;
     }
 
     @POST
@@ -71,13 +76,16 @@ public class HubResponseResource {
             @FormParam("RelayState") String relayState) {
 
         CloseableHttpResponse translatorResponse = null;
-
         try (CloseableHttpClient client = new HttpClientBuilder(environment).build("translator")) {
 
             hubResponseValidator.validate(encryptedHubResponse);
-            if (!requestIdWatcher.haveSeenRequestFor(encryptedHubResponse)) {
+            HttpSession session = request.getSession();
+            String expectedRequestId = (String) session.getAttribute("gateway_authn_id");
+            String inResponseTo = encryptedHubResponse.getInResponseTo();
+
+            if (!expectedRequestId.contains(inResponseTo)){
                 throw new InvalidHubResponseException(
-                    String.format("Received a Response from Hub for an AuthnRequest we have not seen (ID: %s)", encryptedHubResponse.getInResponseTo()));
+                        String.format("Received a Response from Hub for an AuthnRequest we have not seen (ID: %s)", inResponseTo));
             }
 
             HubResponseContainer hubResponseContainer = HubResponseContainer.from(
@@ -123,5 +131,4 @@ public class HubResponseResource {
         LOG.info("[eIDAS Response] ID: " + eidasResponse.getID());
         LOG.info("[eIDAS Response] In response to: " + eidasResponse.getInResponseTo());
     }
-
 }

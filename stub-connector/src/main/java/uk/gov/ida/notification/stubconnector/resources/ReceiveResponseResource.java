@@ -3,14 +3,12 @@ package uk.gov.ida.notification.stubconnector.resources;
 import io.dropwizard.jersey.sessions.Session;
 import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
 import org.opensaml.core.criterion.EntityIdCriterion;
-import org.opensaml.core.xml.XMLObject;
 import org.opensaml.saml.common.assertion.ValidationContext;
 import org.opensaml.saml.common.assertion.ValidationResult;
 import org.opensaml.saml.common.xml.SAMLConstants;
 import org.opensaml.saml.criterion.EntityRoleCriterion;
 import org.opensaml.saml.criterion.ProtocolCriterion;
 import org.opensaml.saml.saml2.core.Assertion;
-import org.opensaml.saml.saml2.core.Attribute;
 import org.opensaml.saml.saml2.core.AttributeStatement;
 import org.opensaml.saml.saml2.core.Response;
 import org.opensaml.saml.saml2.metadata.IDPSSODescriptor;
@@ -26,11 +24,13 @@ import uk.gov.ida.notification.stubconnector.StubConnectorConfiguration;
 import uk.gov.ida.notification.stubconnector.views.ResponseView;
 import uk.gov.ida.saml.metadata.bundle.MetadataResolverBundle;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,6 +47,9 @@ public class ReceiveResponseResource {
 
     private MetadataResolverBundle<StubConnectorConfiguration> connectorMetadataResolverBundle;
 
+    @Context
+    HttpServletRequest request;
+
     public ReceiveResponseResource(
             StubConnectorConfiguration configuration,
             ResponseAssertionDecrypter decrypter,
@@ -60,9 +63,9 @@ public class ReceiveResponseResource {
     @Path("/POST")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public ResponseView receiveResponse(
-            @Session HttpSession session,
             @FormParam(SamlFormMessageType.SAML_RESPONSE) Response response,
-            @FormParam("RelayState") String relayState) {
+            @FormParam("RelayState") String relayState,
+            @Session HttpSession session) {
 
         SAMLSignatureProfileValidator samlSignatureProfileValidator = new SAMLSignatureProfileValidator();
         responseValidator = new ResponseValidator(connectorMetadataResolverBundle.getSignatureTrustEngine(), samlSignatureProfileValidator);

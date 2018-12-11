@@ -12,6 +12,7 @@ import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 
+import org.eclipse.jetty.server.session.SessionHandler;
 import org.opensaml.core.config.InitializationException;
 import org.opensaml.core.config.InitializationService;
 import org.opensaml.saml.metadata.resolver.MetadataResolver;
@@ -154,6 +155,8 @@ public class GatewayApplication extends Application<GatewayConfiguration> {
     private void registerProviders(Environment environment) {
         environment.jersey().register(AuthnRequestParameterProvider.class);
         environment.jersey().register(ResponseParameterProvider.class);
+
+        environment.servlets().setSessionHandler(new SessionHandler());
     }
 
     private void registerExceptionMappers(Environment environment) {
@@ -163,7 +166,6 @@ public class GatewayApplication extends Application<GatewayConfiguration> {
 
     private void registerResources(GatewayConfiguration configuration, Environment environment) throws Exception {
         SamlFormViewBuilder samlFormViewBuilder = new SamlFormViewBuilder();
-        RequestIdWatcher requestIdWatcher = new RequestIdWatcher();
 
         HubAuthnRequestGenerator hubAuthnRequestGenerator = createHubAuthnRequestGenerator(configuration);
 
@@ -180,16 +182,14 @@ public class GatewayApplication extends Application<GatewayConfiguration> {
                 hubAuthnRequestGenerator,
                 samlFormViewBuilder,
                 eidasAuthnRequestValidator,
-                samlRequestSignatureValidator,
-                requestIdWatcher));
+                samlRequestSignatureValidator));
 
         environment.jersey().register(new HubResponseResource(
                 samlFormViewBuilder,
                 configuration.getConnectorNodeUrl().toString(),
                 hubResponseValidator,
                 environment,
-                configuration.getTranslatorUrl().toString(),
-                requestIdWatcher
+                configuration.getTranslatorUrl().toString()
         ));
     }
 

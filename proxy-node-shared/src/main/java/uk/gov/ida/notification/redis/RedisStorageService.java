@@ -43,7 +43,7 @@ public class RedisStorageService extends AbstractStorageService {
     }
 
     @Override
-    public StorageRecord read(String context, String key) throws IOException {
+    public StorageRecord read(String context, String key) {
         List<KeyValue<String, String>> result = redis.hmget(key(context, key), "value", "version", "expiration");
         String value = result.get(0).getValueOrElse(null);
         if (value == null) return null;
@@ -54,7 +54,7 @@ public class RedisStorageService extends AbstractStorageService {
     }
 
     @Override
-    public Pair<Long, StorageRecord> read(String context, String key, long version) throws IOException {
+    public Pair<Long, StorageRecord> read(String context, String key, long version) {
         Long storedVersion = getCurrentVersion(context, key);
         if (storedVersion == null) {
             return new Pair<>(null, null);
