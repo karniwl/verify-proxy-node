@@ -2,24 +2,24 @@ version: '3'
 
 services:
   proxy-node-gateway:
-    image: govukverify/proxy-node-gateway:latest
+    image: registry.tools.verify.govsvc.uk/eidas/proxy-node-gateway:latest
     build:
       context: .
       args:
         component: proxy-node-gateway
   proxy-node-translator:
-    image: govukverify/proxy-node-translator:latest
+    image: registry.tools.verify.govsvc.uk/eidas/proxy-node-translator:latest
     build:
       context: .
       args:
         component: proxy-node-translator
   stub-connector:
-    image: govukverify/stub-connector:latest
+    image: registry.tools.verify.govsvc.uk/eidas/stub-connector:latest
     build:
       context: .
       args:
         component: stub-connector
   softhsm:
-    image: govukverify/softhsm:latest
+    image: registry.tools.verify.govsvc.uk/eidas/softhsm:latest
     build:
       context: ./softhsm

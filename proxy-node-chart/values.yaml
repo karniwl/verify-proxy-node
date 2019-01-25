@@ -1,9 +1,9 @@
 global:
   proxy-node-gateway:
-    image: govukverify/proxy-node-gateway:latest
+    image: registry.tools.verify.govsvc.uk/eidas/gateway:latest
   proxy-node-translator:
-    image: govukverify/proxy-node-translator:latest
+    image: registry.tools.verify.govsvc.uk/eidas/translator:latest
   stub-connector:
-    image: govukverify/stub-connector:latest
+    image: registry.tools.verify.govsvc.uk/eidas/stub-connector:latest
   softhsm:
-    image: govukverify/softhsm:latest
+    image: registry.tools.verify.govsvc.uk/eidas/softhsm:latest

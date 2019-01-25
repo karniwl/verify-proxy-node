@@ -23,7 +23,7 @@ components="$(yq read --tojson $TMP_COMPOSE | jq -r '.services | keys[]')"
 for component in $components; do
   # Dereference symlinks when using tar so md5sum reflects Dockerfile changes
   tag="local-$(tar -ch $component | md5sum | awk '{print $1}')"
-  image="govukverify/${component}:${tag}"
+  image="registry.tools.verify.govsvc.uk/eidas/${component}:${tag}"
   echo "tagging $component: $image"
   yq write --inplace $TMP_COMPOSE "services.${component}.image" "$image"
 done
