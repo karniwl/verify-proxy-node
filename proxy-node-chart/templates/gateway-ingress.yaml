@@ -1,0 +1,23 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: proxy-node-gateway
+  labels:
+    app.kubernetes.io/name: proxy-node-gateway
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  annotations:
+    kubernetes.io/tls-acme: "true"
+spec:
+  tls:
+    - hosts:
+      - gateway.{{ .Values.cluster.domain }}
+      secretName: proxy-node-gateway-tls
+  rules:
+    - host: gateway.{{ .Values.cluster.domain }}
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: proxy-node-gateway
+              servicePort: http

@@ -3,11 +3,10 @@ kind: Service
 metadata:
   name: stub-idp
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
-  - name: "6200"
+  - name: http
     port: 6200
     targetPort: 80
-    nodePort: 31300
   selector:
     service: stub-idp

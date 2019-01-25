@@ -1,1 +1,8 @@
 replicaCount: 1
+
+ingress:
+  host: "country.example.com"
+
+idp:
+  ingress:
+    host: "hub.example.com"

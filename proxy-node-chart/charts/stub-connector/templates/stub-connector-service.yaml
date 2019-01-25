@@ -4,12 +4,11 @@ metadata:
   annotations:
   name: stub-connector
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
-  - name: "80"
+  - name: http
     port: 80
     targetPort: 80
-    nodePort: 31100
   - name: "6667"
     port: 6667
     targetPort: 6667

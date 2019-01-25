@@ -1,0 +1,23 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: stub-idp
+  labels:
+    app.kubernetes.io/name: stub-idp
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  annotations:
+    kubernetes.io/tls-acme: "true"
+spec:
+  tls:
+    - hosts:
+      - hub.{{ .Values.cluster.domain }}
+      secretName: stub-idp-tls
+  rules:
+    - host: hub.{{ .Values.cluster.domain }}
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: stub-idp
+              servicePort: http

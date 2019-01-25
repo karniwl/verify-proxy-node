@@ -3,12 +3,11 @@ kind: Service
 metadata:
   name: proxy-node-gateway
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
-  - name: "6100"
+  - name: http
     port: 6100
     targetPort: 80
-    nodePort: 31200
   - name: "6601"
     port: 6601
     targetPort: 6601
