@@ -1,6 +1,7 @@
 dependencies {
     compile configurations.dropwizard,
             configurations.saml,
+            configurations.saml_gov,
             configurations.common,
             configurations.soft_hsm,
             project(':proxy-node-shared')

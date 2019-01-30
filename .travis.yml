@@ -6,11 +6,20 @@ jdk:
 env:
   - VERIFY_USE_PUBLIC_BINARIES=true
 
-script: ./gradlew --no-daemon --quiet test
+install:
+  - npm install -g snyk
+
+script:
+  - ./gradlew --no-daemon --quiet test
+  - ./snyk_test.sh
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+
+after_success:
+  - ./snyk_monitor.sh
+
 cache:
   directories:
     - $HOME/.gradle/caches/

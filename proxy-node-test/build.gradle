@@ -1,5 +1,6 @@
 dependencies {
     compile configurations.saml,
+            configurations.saml_gov,
             configurations.saml_test,
             configurations.common,
             project(':proxy-node-shared')
