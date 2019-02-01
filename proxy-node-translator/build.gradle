@@ -3,6 +3,7 @@ dependencies {
             configurations.saml,
             configurations.common,
             configurations.soft_hsm,
+            configurations.ida_utils,
             project(':proxy-node-shared')
 }
 
